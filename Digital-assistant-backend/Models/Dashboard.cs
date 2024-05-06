@@ -17,6 +17,6 @@ namespace Digital_assistant_backend.Models
 
         //relationship with user
         public int UserId { get; set; }
-        public User User { get; set; }
+        public  User? User { get; set; }
     }
 }

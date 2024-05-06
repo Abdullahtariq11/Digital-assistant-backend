@@ -6,16 +6,12 @@ namespace Digital_assistant_backend.Models
     {
         [Key]
         public int Id { get; set; }
-        public DateOnly startDate { get; set; }
-        public DateOnly endDate { get; set; }
-        public string Description { get; set; }
-        public string Name { get; set; }
-        public string Status { get; set; }
-        public DateOnly dueDate { get; set; }
+        public required string Name { get; set; }
+        public required string Status { get; set; }
 
         // Foreign key to represent the relationship
         public int ProjectId { get; set; }
-        public Project Project { get; set; }
+        public Project? Project { get; set; }
 
     }
 }

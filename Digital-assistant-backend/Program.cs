@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Digital_assistant_backend.Data;
+using Digital_assistant_backend;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +12,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddScoped<IUserService,userServiceHandler>();
+builder.Services.AddScoped<IProjectService,projectService>();
 
 builder.Services.AddControllersWithViews()
     .AddJsonOptions(options =>
