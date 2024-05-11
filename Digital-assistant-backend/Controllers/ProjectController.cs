@@ -46,4 +46,43 @@ public class ProjectController : Controller
         }
         return Ok(result.Data);
     }
+
+
+    [HttpPut]
+    [Route("[controller]/editProject/{id:int}")]
+    public async Task<IActionResult> editProject([FromBody] projectDto project,[FromRoute]int id)
+    {
+        var result=await _projectService.editProject(project,id);
+                        if(!result.Success)
+        {
+            return BadRequest(result.Message);
+        }
+        return Ok(result.Data);
+
+    }
+
+    [HttpDelete]
+    [Route("[controller]/DeleteProjectbyId/{id:int}")]
+     public async Task<IActionResult> DeleteProjectbyId([FromRoute]int id)
+    {
+        var result= await _projectService.DeleteProject(id);
+                if(!result.Success)
+        {
+            return BadRequest(result.Message);
+        }
+        return Ok(result.Data);
+    }
+
+
+    [HttpGet]
+    [Route("[controller]/getByProjectId/{id:int}")]
+    public async Task<IActionResult> getByProjectId([FromRoute]int id)
+    {
+        var result= await _projectService.getByProjectId(id);
+                if(!result.Success)
+        {
+            return BadRequest(result.Message);
+        }
+        return Ok(result.Data);
+    }
 }

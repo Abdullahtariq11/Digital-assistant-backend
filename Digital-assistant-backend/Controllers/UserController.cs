@@ -46,6 +46,8 @@ namespace Digital_assistant_backend.Controllers
 
             return Ok(result.Data);
         }
+
+
         [HttpPost]
         [Route("[controller]/login")]
         public async Task<IActionResult> Login([FromBody] LoginDto loginDto)

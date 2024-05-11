@@ -1,7 +1,10 @@
-﻿namespace Digital_assistant_backend;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Digital_assistant_backend;
 
 public class projectDto
-{
+{       [Key]
+        public int id { get; set; }
         public required string Name { get; set; }
         public required string Description { get; set; }
         public required string Status { get; set; }

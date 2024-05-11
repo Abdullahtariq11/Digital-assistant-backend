@@ -51,9 +51,52 @@ public class projectService : IProjectService
         return Service<createProjectDto>.success(project);
     }
 
-    public Task<Service<Project>> editProject(Project project)
+    public async Task<Service<projectDto>> DeleteProject(int id)
     {
-        throw new NotImplementedException();
+        var project=await _dbcontext.Projects.FirstOrDefaultAsync(x=>x.UserId==1&& x.Id==id);
+        if( project==null) return Service<projectDto>.failure("no projects exist or incorrect data");
+        _dbcontext.Projects.Remove(project);
+        await _dbcontext.SaveChangesAsync();
+
+        var projectDeleted= new projectDto
+        {
+            id=project.Id,
+                Name=project.Name,
+                Description=project.Description,
+                Status=project.Status,
+                StartDate=project.StartDate,
+                EndDate=project.EndDate,
+                Priority=project.Priority,
+        };
+
+
+       return Service<projectDto>.success(projectDeleted);
+    }
+
+    public async Task<Service<projectDto>> editProject(projectDto project,int id)
+    {   
+        var projectRecieved=await _dbcontext.Projects.FirstOrDefaultAsync(x=>x.UserId==1&& x.Id==id);
+         if(project==null || projectRecieved==null) return Service<projectDto>.failure("no projects exist or incorrect data");
+         projectRecieved.Name=project.Name;
+         projectRecieved.Description=project.Description;
+         projectRecieved.Status=project.Status;
+         projectRecieved.Priority=project.Priority;
+         projectRecieved.StartDate=project.StartDate;
+         projectRecieved.EndDate=project.EndDate;
+         await _dbcontext.SaveChangesAsync();
+
+         var newProject= new projectDto
+         {
+            id=project.id,
+            Name = project.Name,
+            Description = project.Description,
+            Status = project.Status,
+            Priority = project.Priority,
+            StartDate = project.StartDate,
+            EndDate = project.EndDate
+         };
+
+         return Service<projectDto>.success(newProject);     
     }
 
     public async Task<Service<List<projectDto>>> getAllProjects()
@@ -66,6 +109,7 @@ public class projectService : IProjectService
         {
             var newProject= new projectDto
             {
+                id=project.Id,
                 Name=project.Name,
                 Description=project.Description,
                 Status=project.Status,
@@ -76,6 +120,25 @@ public class projectService : IProjectService
             newProjects.Add(newProject);
         }
         return Service<List<projectDto>>.success(newProjects);
+    }
+
+    public async Task<Service<projectDto>> getByProjectId(int id)
+    {
+        var project= await _dbcontext.Projects.FirstOrDefaultAsync(x=>x.UserId==1&& x.Id==id);
+
+       
+         if(project==null) return Service<projectDto>.failure("no projects exist");
+          var newProject= new projectDto
+            {
+                Name=project.Name,
+                Description=project.Description,
+                Status=project.Status,
+                StartDate=project.StartDate,
+                EndDate=project.EndDate,
+                Priority=project.Priority,
+            };
+
+        return Service<projectDto>.success(newProject);
     }
 
     public async Task<Service<List<projectDto>>> getByUserId(int id)
