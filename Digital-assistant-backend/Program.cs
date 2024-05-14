@@ -14,6 +14,10 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IUserService,userServiceHandler>();
 builder.Services.AddScoped<IProjectService,projectService>();
+builder.Services.AddScoped<ITaskService, taskService>();
+
+
+
 
 builder.Services.AddControllersWithViews()
     .AddJsonOptions(options =>

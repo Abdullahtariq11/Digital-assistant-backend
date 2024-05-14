@@ -3,7 +3,7 @@
 namespace Digital_assistant_backend;
 
 public class projectDto
-{       [Key]
+{
         public int id { get; set; }
         public required string Name { get; set; }
         public required string Description { get; set; }

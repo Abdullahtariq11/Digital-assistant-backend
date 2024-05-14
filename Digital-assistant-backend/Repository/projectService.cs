@@ -60,7 +60,7 @@ public class projectService : IProjectService
 
         var projectDeleted= new projectDto
         {
-            id=project.Id,
+                id=project.Id,
                 Name=project.Name,
                 Description=project.Description,
                 Status=project.Status,
@@ -130,6 +130,7 @@ public class projectService : IProjectService
          if(project==null) return Service<projectDto>.failure("no projects exist");
           var newProject= new projectDto
             {
+                id=project.Id,
                 Name=project.Name,
                 Description=project.Description,
                 Status=project.Status,
