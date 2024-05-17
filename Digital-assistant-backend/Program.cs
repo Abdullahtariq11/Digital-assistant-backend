@@ -5,6 +5,10 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Digital_assistant_backend.Data;
 using Digital_assistant_backend;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,6 +33,19 @@ builder.Services.AddDbContext<ManagementDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("ManagementConnectionString"))
 );
 
+#pragma warning disable CS8604 // Possible null reference argument.
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options=>options.TokenValidationParameters=new TokenValidationParameters{
+    ValidateIssuer=true,
+    ValidateAudience=true,
+    ValidateLifetime=true,
+    ValidateIssuerSigningKey=true,
+    ValidIssuer=builder.Configuration["JWT:Issuer"],
+    ValidAudience=builder.Configuration["JWT:Audience"],
+    IssuerSigningKey=new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Key"]))
+
+});
+#pragma warning restore CS8604 // Possible null reference argument.
+
 var app = builder.Build();
 
 // Enable CORS
@@ -46,6 +63,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.Run();

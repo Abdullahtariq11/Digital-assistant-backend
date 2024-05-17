@@ -99,9 +99,39 @@ public class projectService : IProjectService
          return Service<projectDto>.success(newProject);     
     }
 
-    public async Task<Service<List<projectDto>>> getAllProjects()
+    public async Task<Service<List<projectDto>>> getAllProjects(string? filterOn=null, string? filterQuerry=null,string? sortBy=null, bool isAscending=true,int pageNumber=1, int pageSize=1000)
     {
-        var projects=await _dbcontext.Projects.ToListAsync();
+        //var projects=await _dbcontext.Projects.ToListAsync();
+
+        var queryableProjects=  _dbcontext.Projects.AsQueryable();
+        
+        //filtering
+        if(string.IsNullOrWhiteSpace(filterOn)==false&&string.IsNullOrWhiteSpace(filterQuerry)==false){
+            if(filterOn.Equals("Name",StringComparison.OrdinalIgnoreCase)){
+                queryableProjects=queryableProjects.Where(x=>x.Name.Contains(filterQuerry));
+            }
+            else if(filterOn.Equals("Description",StringComparison.OrdinalIgnoreCase)){
+                queryableProjects=queryableProjects.Where(x=>x.Description.Contains(filterQuerry));
+            }
+        }
+        //Sorting
+        if(string.IsNullOrWhiteSpace(sortBy)==false ){
+            if(sortBy.Equals("Name",StringComparison.OrdinalIgnoreCase)){
+                queryableProjects=isAscending? queryableProjects.OrderBy(x=>x.Name): queryableProjects.OrderByDescending(x=>x.Name);
+            }
+            else if(sortBy.Equals("StartDate",StringComparison.OrdinalIgnoreCase)){
+                queryableProjects=isAscending? queryableProjects.OrderBy(x=>x.StartDate): queryableProjects.OrderByDescending(x=>x.StartDate);
+            }
+            else if(sortBy.Equals("EndDate",StringComparison.OrdinalIgnoreCase)){
+                queryableProjects=isAscending? queryableProjects.OrderBy(x=>x.EndDate): queryableProjects.OrderByDescending(x=>x.EndDate);
+            }
+        }
+        //Pagination
+        var skipResult= (pageNumber-1)*pageSize;
+
+
+        var projects= await queryableProjects.Skip(skipResult).Take(pageSize).ToListAsync();
+
         if(projects==null) return Service<List<projectDto>>.failure("no projects exist");
 
         var newProjects=new List<projectDto>();

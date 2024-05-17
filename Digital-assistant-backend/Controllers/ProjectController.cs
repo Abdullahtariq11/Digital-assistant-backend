@@ -25,9 +25,11 @@ public class ProjectController : Controller
 
     [HttpGet]
     [Route("[controller]/GetAll")]
-    public async Task<IActionResult> GetALlProjects()
+    public async Task<IActionResult> GetALlProjects([FromQuery] string? filterOn,[FromQuery] string? filterQuerry,
+     [FromQuery] string? sortBy,[FromQuery] bool isAscending=true,
+     [FromQuery] int pageNumber=1,[FromQuery] int pageSize=1000)
     {
-        var result= await _projectService.getAllProjects();
+        var result= await _projectService.getAllProjects(filterOn,filterQuerry,sortBy,isAscending,pageNumber,pageSize);
                 if(!result.Success)
         {
             return BadRequest(result.Message);

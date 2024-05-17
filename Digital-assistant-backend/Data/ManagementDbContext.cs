@@ -32,6 +32,7 @@ namespace Digital_assistant_backend.Data
                  .HasForeignKey(d => d.ProjectId);
 
             base.OnModelCreating(modelBuilder);
+            
         }
 
     }

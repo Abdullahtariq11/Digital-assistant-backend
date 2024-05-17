@@ -4,7 +4,8 @@ namespace Digital_assistant_backend;
 
 public interface IProjectService
 {
-    public  Task<Service<List<projectDto>>> getAllProjects();
+    public  Task<Service<List<projectDto>>> getAllProjects(string? filterOn=null, string? filterQuerry=null, 
+    string? sortBy=null, bool isAscending=true,int pageNumber=1, int pageSize=1000);
     public Task<Service<List<projectDto>>> getByUserId(int id);
     
     public Task<Service<createProjectDto>> createProject(createProjectDto project);
