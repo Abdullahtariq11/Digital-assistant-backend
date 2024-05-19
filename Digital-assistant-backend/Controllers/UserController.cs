@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Digital_assistant_backend.Controllers
 {
     [ApiController]
-    [Authorize]
+    
     public class UserController : Controller
     {
         private readonly IUserService _userService;

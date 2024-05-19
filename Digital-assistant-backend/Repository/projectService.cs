@@ -53,7 +53,7 @@ public class projectService : IProjectService
 
     public async Task<Service<projectDto>> DeleteProject(int id)
     {
-        var project=await _dbcontext.Projects.FirstOrDefaultAsync(x=>x.UserId==1&& x.Id==id);
+        var project=await _dbcontext.Projects.FirstOrDefaultAsync(x=> x.Id==id);
         if( project==null) return Service<projectDto>.failure("no projects exist or incorrect data");
         _dbcontext.Projects.Remove(project);
         await _dbcontext.SaveChangesAsync();
@@ -75,7 +75,7 @@ public class projectService : IProjectService
 
     public async Task<Service<projectDto>> editProject(projectDto project,int id)
     {   
-        var projectRecieved=await _dbcontext.Projects.FirstOrDefaultAsync(x=>x.UserId==1&& x.Id==id);
+        var projectRecieved=await _dbcontext.Projects.FirstOrDefaultAsync(x=>x.Id==id);
          if(project==null || projectRecieved==null) return Service<projectDto>.failure("no projects exist or incorrect data");
          projectRecieved.Name=project.Name;
          projectRecieved.Description=project.Description;
@@ -154,7 +154,7 @@ public class projectService : IProjectService
 
     public async Task<Service<projectDto>> getByProjectId(int id)
     {
-        var project= await _dbcontext.Projects.FirstOrDefaultAsync(x=>x.UserId==1&& x.Id==id);
+        var project= await _dbcontext.Projects.FirstOrDefaultAsync(x=>x.Id==id);
 
        
          if(project==null) return Service<projectDto>.failure("no projects exist");
@@ -182,6 +182,7 @@ public class projectService : IProjectService
         {
             var newProject= new projectDto
             {
+                 id=project.Id,
                 Name=project.Name,
                 Description=project.Description,
                 Status=project.Status,

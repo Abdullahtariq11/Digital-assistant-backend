@@ -24,6 +24,7 @@ public class userServiceHandler : IUserService
         }
         var user=new UserDto
         {
+            id=userNew.Id,
             Email=userNew.Email,
             Name=userNew.Name,
         };
@@ -38,6 +39,7 @@ public class userServiceHandler : IUserService
         foreach(var user in users){
             var newUser = new UserDto
             {
+                id=user.Id,
                 Email=user.Email,
                 Name=user.Name,
             };
@@ -65,6 +67,7 @@ public class userServiceHandler : IUserService
         }
         var newUser= new UserDto
         {
+            id=user.Id,
             Email=user.Email,
             Name=user.Name,
         };
@@ -97,6 +100,7 @@ public class userServiceHandler : IUserService
 
         var userDt= new UserDto
         {
+            id=user.Id,
             Email=user.Email,
             Name=user.Name,
         };
