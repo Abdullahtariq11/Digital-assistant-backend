@@ -10,6 +10,7 @@ namespace Digital_assistant_backend.Data
 
         [Required(ErrorMessage = "Email is required")]
         [EmailAddress(ErrorMessage = "Invalid email format")]
+        [UniqueUser("Email",ErrorMessage ="Email already exist")]
         public required  string Email { get; set; }
 
        [Required(ErrorMessage = "Password is required")]

@@ -1,8 +1,9 @@
 ﻿namespace Digital_assistant_backend;
-
+using Digital_assistant_backend.CustomActionFilters;
 using Digital_assistant_backend.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-
+    
 public class ProjectController : Controller
 {
     private readonly IProjectService _projectService;
@@ -12,6 +13,7 @@ public class ProjectController : Controller
     }
 
     [HttpPost]
+    [ValidateModel]
     [Route("[controller]/Create")]
     public async Task<IActionResult> CreateProject([FromBody] createProjectDto project)
     {
@@ -37,11 +39,13 @@ public class ProjectController : Controller
         return Ok(result.Data);
     }
 
+    //Get All Projects By User Id
     [HttpGet]
     [Route("[controller]/GetbyId/{id:int}")]
-    public async Task<IActionResult> GetByUserId([FromRoute]int id)
+    public async Task<IActionResult> GetbyId([FromRoute]int id,[FromQuery] string? filterOn,[FromQuery] string? filterQuerry,
+    [FromQuery] string? sortBy,[FromQuery]bool isAscending=true)
     {
-        var result= await _projectService.getByUserId(id);
+        var result= await _projectService.getByUserId(id,filterOn,filterQuerry,sortBy,isAscending);
                 if(!result.Success)
         {
             return BadRequest(result.Message);

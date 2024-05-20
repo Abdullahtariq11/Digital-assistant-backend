@@ -172,9 +172,32 @@ public class projectService : IProjectService
         return Service<projectDto>.success(newProject);
     }
 
-    public async Task<Service<List<projectDto>>> getByUserId(int id)
+    public async Task<Service<List<projectDto>>> getByUserId(int id,string? filterOn,string? filterQuerry,string? sortBy,bool isAscending=true)
     {
-        var projects= await _dbcontext.Projects.Where(x=>x.UserId==id).ToListAsync();
+        
+        var queryableProjects=_dbcontext.Projects.Where(x=>x.UserId==id).AsQueryable();
+        //filtering
+        if(string.IsNullOrWhiteSpace(filterQuerry)==false&&string.IsNullOrWhiteSpace(filterOn)==false){
+            if(filterOn.Equals("Name",StringComparison.OrdinalIgnoreCase)){
+                queryableProjects=queryableProjects.Where(x=>x.Name.Contains(filterQuerry));
+            }
+        }
+        //Sorting
+        if (string.IsNullOrWhiteSpace(sortBy)==false)
+        {
+            if(sortBy.Equals("Name",StringComparison.OrdinalIgnoreCase)){
+                 queryableProjects=isAscending? queryableProjects.OrderBy(x=>x.Name): queryableProjects.OrderByDescending(x=>x.Name);
+            }
+            else if(sortBy.Equals("StartDate",StringComparison.OrdinalIgnoreCase)){
+                 queryableProjects=isAscending? queryableProjects.OrderBy(x=>x.StartDate): queryableProjects.OrderByDescending(x=>x.StartDate);
+            }
+            else if(sortBy.Equals("EndDate",StringComparison.OrdinalIgnoreCase)){
+                 queryableProjects=isAscending? queryableProjects.OrderBy(x=>x.EndDate): queryableProjects.OrderByDescending(x=>x.EndDate);
+            }
+        }
+
+
+        var projects= await queryableProjects.ToListAsync();
          if(projects==null|| projects.Count==0) return Service<List<projectDto>>.failure("no projects exist");
 
         var newProjects=new List<projectDto>();
