@@ -42,8 +42,8 @@ namespace Digital_assistant_backend.Controllers
             return Ok(result.Data);
         }
         [HttpGet]
-        [Route("[controller]/GetById/{id:int}")]
-        public async Task<IActionResult> GetUserById([FromRoute] int id)
+        [Route("[controller]/GetById/{id}")]
+        public async Task<IActionResult> GetUserById([FromRoute] string id)
         {
             var result = await _userService.GetUserById(id);
             if (!result.Success)

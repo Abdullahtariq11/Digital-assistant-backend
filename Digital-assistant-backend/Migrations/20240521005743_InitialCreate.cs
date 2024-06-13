@@ -5,7 +5,7 @@
 namespace Digital_assistant_backend.Migrations
 {
     /// <inheritdoc />
-    public partial class updatedProjectsandTasks11 : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

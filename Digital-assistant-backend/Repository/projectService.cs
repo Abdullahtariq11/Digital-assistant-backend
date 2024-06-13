@@ -1,5 +1,5 @@
 ﻿using Digital_assistant_backend.Data;
-using Digital_assistant_backend.Migrations;
+
 using Digital_assistant_backend.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,7 +16,7 @@ public class projectService : IProjectService
     public async Task<Service<createProjectDto>> createProject(createProjectDto project)
     {
         if (project == null) return Service<createProjectDto>.failure("incorrect data");
-        var user = _dbcontext.Users.Find(project.UserId);
+        var user = await _dbcontext.Users.FindAsync(project.ApplicationUserId);
         if (user == null) return Service<createProjectDto>.failure("invalid user");
         var tasks = new List<ProjectTask>();
         if (project.Tasks!= null )
@@ -42,8 +42,8 @@ public class projectService : IProjectService
             Priority = project.Priority,
             StartDate = project.StartDate,
             EndDate = project.EndDate,
-            UserId = project.UserId,
-            User = user,
+            ApplicationUserId = project.ApplicationUserId,
+            ApplicationUser = user,
             Tasks = tasks,
         };
         await _dbcontext.Projects.AddAsync(newProject);
@@ -172,10 +172,10 @@ public class projectService : IProjectService
         return Service<projectDto>.success(newProject);
     }
 
-    public async Task<Service<List<projectDto>>> getByUserId(int id,string? filterOn,string? filterQuerry,string? sortBy,bool isAscending=true)
+    public async Task<Service<List<projectDto>>> getByUserId(string id,string? filterOn,string? filterQuerry,string? sortBy,bool isAscending=true)
     {
         
-        var queryableProjects=_dbcontext.Projects.Where(x=>x.UserId==id).AsQueryable();
+        var queryableProjects=_dbcontext.Projects.Where(x=>x.ApplicationUserId==id).AsQueryable();
         //filtering
         if(string.IsNullOrWhiteSpace(filterQuerry)==false&&string.IsNullOrWhiteSpace(filterOn)==false){
             if(filterOn.Equals("Name",StringComparison.OrdinalIgnoreCase)){

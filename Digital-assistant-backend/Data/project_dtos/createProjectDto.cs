@@ -19,7 +19,7 @@ public class createProjectDto
         [DateGreaterThan("StartDate",ErrorMessage="End date should be greater then start date")]
         public DateOnly EndDate { get; set; }
         
-         public int UserId { get; set; }
+         public string ApplicationUserId { get; set; }
         public List<taskDto>? Tasks { get; set; }
 
 }

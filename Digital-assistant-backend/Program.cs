@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Digital_assistant_backend.Models;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,7 +34,10 @@ builder.Services.AddControllersWithViews()
 builder.Services.AddDbContext<ManagementDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("ManagementConnectionString"))
 );
-
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+    .AddEntityFrameworkStores<ManagementDbContext>()
+    .AddDefaultTokenProviders();
+    
 #pragma warning disable CS8604 // Possible null reference argument.
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options=>options.TokenValidationParameters=new TokenValidationParameters{
     ValidateIssuer=true,
@@ -66,5 +71,20 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+        await RoleSeeder.SeedRoles(roleManager);
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occurred while seeding roles.");
+    }
+}
 app.Run();
 

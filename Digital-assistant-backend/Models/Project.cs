@@ -13,9 +13,11 @@ namespace Digital_assistant_backend.Models
         public DateOnly StartDate { get; set; }
         public DateOnly EndDate { get; set; }
 
-        // Foreign key to represent the relationship
-        public int UserId { get; set; }
-        public required User User { get; set; }
+
+
+        // new relationship after setting up identity
+        public string ApplicationUserId { get; set; }
+        public ApplicationUser ApplicationUser { get; set; }
 
         // Navigation property for one-to-many relationship
         public List<ProjectTask>? Tasks { get; set; }

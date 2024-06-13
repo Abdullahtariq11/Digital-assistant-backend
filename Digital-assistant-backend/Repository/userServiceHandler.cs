@@ -1,24 +1,27 @@
 ﻿using Digital_assistant_backend.Data;
 using Digital_assistant_backend.Models;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Digital_assistant_backend;
 
 public class userServiceHandler : IUserService
 {
-    private readonly ManagementDbContext _dbContext;
+    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly SignInManager<ApplicationUser> _signInManager;
 
-   public userServiceHandler(ManagementDbContext dbContext)
-   {
-        _dbContext = dbContext;
-   }
+    public userServiceHandler(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
+    {
+        _userManager = userManager;
+        _signInManager = signInManager;
+    }
 
 
     
-    public async Task<Service<UserDto>> GetUserById(int id)
+  public async Task<Service<UserDto>> GetUserById(string id)
     {
-        var userNew= await _dbContext.Users.FirstOrDefaultAsync(x=>x.Id==id);
+        var userNew= await _userManager.FindByIdAsync(id);
         if(userNew==null){
             return Service<UserDto>.failure("incorrect data");
         }
@@ -34,7 +37,7 @@ public class userServiceHandler : IUserService
 
     public async Task<Service<List<UserDto>>> GetUsers()
     {
-        var users= await  _dbContext.Users.ToListAsync();
+        var users= await  _userManager.Users.ToListAsync();
         List<UserDto> userDtos= new List<UserDto>();
         foreach(var user in users){
             var newUser = new UserDto
@@ -50,62 +53,67 @@ public class userServiceHandler : IUserService
 
     public  async Task<Service<UserDto>> Login(LoginDto loginDto)
     {
-        if(loginDto==null)
+       if (loginDto == null)
         {
-            return Service<UserDto>.failure("incorrect data");
+            return Service<UserDto>.failure("Invalid data");
         }
-        var user = await _dbContext.Users.FirstOrDefaultAsync(x=>x.Email==loginDto.Email);
 
-        if(user==null)
+        var user = await _userManager.FindByEmailAsync(loginDto.Email);
+        if (user == null)
         {
-            return Service<UserDto>.failure("incorrect password or username");
+            return Service<UserDto>.failure("Incorrect password or username");
         }
-        bool isPasswordCorrect=BCrypt.Net.BCrypt.Verify(loginDto.Password,user.Password);
-        if(!isPasswordCorrect)
+
+        var result = await _signInManager.PasswordSignInAsync(user, loginDto.Password, false, false);
+        if (!result.Succeeded)
         {
-            return Service<UserDto>.failure("incorrect password or username");
+            return Service<UserDto>.failure("Incorrect password or username");
         }
-        var newUser= new UserDto
+
+        var userDto = new UserDto
         {
-            id=user.Id,
-            Email=user.Email,
-            Name=user.Name,
+            id = user.Id,
+            Email = user.Email,
+            Name = user.Name
         };
-        return Service<UserDto>.success(newUser);
+
+        return Service<UserDto>.success(userDto);
     }
 
-    public async Task<Service<UserDto>> SignupUser(UserRegisterationDto NewUser)
+    public async Task<Service<UserDto>> SignupUser(UserRegisterationDto newUser)
     {
-        if (NewUser==null)
+        if (newUser == null)
         {
-            return Service<UserDto>.failure("incorrect data");
+            return Service<UserDto>.failure("Invalid data");
         }
-        var existingUser=await _dbContext.Users.FirstOrDefaultAsync(x=>x.Email==NewUser.Email);
-        if(existingUser!=null)
+
+        var existingUser = await _userManager.FindByEmailAsync(newUser.Email);
+        if (existingUser != null)
         {
-            return Service<UserDto>.failure("user already exists");
+            return Service<UserDto>.failure("User already exists");
         }
-        string hashedPassword=BCrypt.Net.BCrypt.HashPassword(NewUser.Password);
 
-        var user= new User 
+        var user = new ApplicationUser
         {
-            Name=NewUser.Name,
-            Email=NewUser.Email, 
-            Password=hashedPassword,
-            Projects=new List<Project>{},
-            Dashboard=new Dashboard(),
+            Name = newUser.Name,
+            Email = newUser.Email,
+            UserName = newUser.Email
         };
-        await _dbContext.Users.AddAsync(user);
-        await _dbContext.SaveChangesAsync();
 
-        var userDt= new UserDto
+        var result = await _userManager.CreateAsync(user, newUser.Password);
+        if (!result.Succeeded)
         {
-            id=user.Id,
-            Email=user.Email,
-            Name=user.Name,
-        };
-        return Service<UserDto>.success(userDt);
+            return Service<UserDto>.failure(string.Join(", ", result.Errors.Select(e => e.Description)));
+        }
 
+        var userDto = new UserDto
+        {
+            id = user.Id,
+            Email = user.Email,
+            Name = user.Name
+        };
+
+        return Service<UserDto>.success(userDto);
         
     }
 
